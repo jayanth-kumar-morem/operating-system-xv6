@@ -57,7 +57,7 @@ Ans.
 
 4. Where is your "HOME" directory located in the system?
 
-Ans. /home
+Ans. /home/jayanth
 
 5. Paste the output of the command `ls -1a ~`.
    (The option passed is (one)-a and not `-la`)
