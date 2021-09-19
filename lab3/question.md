@@ -19,7 +19,6 @@
     $ ./lab3 -a < test.in > test.out
 ```
 
-
 ## Format of matrix (input and output)
 
 The input and output files are considered to be legal if it follows
