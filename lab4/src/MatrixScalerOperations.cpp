@@ -9,83 +9,59 @@
 #include "MatrixOperations.h"
 #include <vector>
 using namespace std;
-    MatrixScalerOperations::MatrixScalerOperations(){
-        row=0;
-        col=0;
-    }
-    MatrixScalerOperations::MatrixScalerOperations(int r, int c){
-        row=r;
-        col=c;
-        for(int i=0;i<row;i++){
-            vector<int> temp;
-            for(int j=0;j<col;j++){
-                temp.push_back(0);
-            }
-            mat.push_back(temp);
+    vector<vector<int>> MatrixScalerOperations::AddScaler(vector<vector<int>> mat,int x){
+        if(!mat.size() || !mat[0].size()){
+            initLogger( "mylogfile.log", ldebug);
+            L_(lwarning) << "Invalid Matrix or Empty Matrix Detected ... Exiting";
+            endLogger();
+            exit(3);
         }
-    }
-    void MatrixScalerOperations::enter(){
-        int f=0;
-        for (int i=0; i<row; i++)
-        {
-            // cout<<"i="<<i<<endl;
-            string temp;
-            getline(cin,temp);
-            if(!temp.length()){
-                i--;
-                continue;
-            }
-            stringstream ss(temp);
-            for(int j=0;j<col;j++){
-                string substr;
-                getline(ss, substr, ',');
-                if(!ss.good())  break;
-                mat[i][j]=stoi(substr);
-                // cout<<"i="<<i<<" j="<<j<<" = "<<stoi(substr);
-                // cout<<atoi(substr.c_str())<<"="<<endl;
-            }
-        }
-    }
-    void MatrixScalerOperations::print(){
-        for (int u=0; u<row; u++)
-        {
-            for (int v=0; v<col; v++){
-                cout<<mat[u][v]<<" ";
-            }
-            cout<<endl;
-        }
-    }
-    void MatrixScalerOperations::AddScaler(int x){
-        for(int i=0;i<row;i++){
-            for(int j=0;j<col;j++){
+        for(int i=0;i<mat.size();i++){
+            for(int j=0;j<mat[0].size();j++){
                 mat[i][j]+=x;                
             }
         }
+        return mat;
     }
-    void MatrixScalerOperations::subtractScaler(int x){
-        for(int i=0;i<row;i++){
-            for(int j=0;j<col;j++){
+    vector<vector<int>> MatrixScalerOperations::subtractScaler(vector<vector<int>> mat,int x){
+        if(!mat.size() || !mat[0].size()){
+            initLogger( "mylogfile.log", ldebug);
+            L_(lwarning) << "Invalid Matrix or Empty Matrix Detected ... Exiting";
+            endLogger();
+            exit(3);
+        }
+        for(int i=0;i<mat.size();i++){
+            for(int j=0;j<mat[0].size();j++){
                 mat[i][j]-=x;                
             }
         }
+        return mat;
     }
-    void MatrixScalerOperations::multiplyScaler(int x){
-        for(int i=0;i<row;i++){
-            for(int j=0;j<col;j++){
+    vector<vector<int>> MatrixScalerOperations::multiplyScaler(vector<vector<int>> mat,int x){
+        if(!mat.size() || !mat[0].size()){
+            initLogger( "mylogfile.log", ldebug);
+            L_(lwarning) << "Invalid Matrix or Empty Matrix Detected ... Exiting";
+            endLogger();
+            exit(3);
+        }
+        for(int i=0;i<mat.size();i++){
+            for(int j=0;j<mat[0].size();j++){
                 mat[i][j]*=x;                
             }
         }
+        return mat;
     }
-    void MatrixScalerOperations::divisionScaler(int x){
-        if(x==0){
+    vector<vector<int>> MatrixScalerOperations::divisionScaler(vector<vector<int>> mat,int x){
+        if(!mat.size() || !mat[0].size()){
             initLogger( "mylogfile.log", ldebug);
             L_(lwarning) << "Division By zero... Exiting... ";
             endLogger();
             exit(3);
         }
-        for(int i=0;i<row;i++){
-            for(int j=0;j<col;j++){
+        for(int i=0;i<mat.size();i++){
+            for(int j=0;j<mat[0].size();j++){
                 mat[i][j]/=x;                
             }
         }
+        return mat;
     }

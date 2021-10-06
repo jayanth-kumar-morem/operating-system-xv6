@@ -12,16 +12,9 @@
 using namespace std;
 class MatrixScalerOperations{
     public:
-    int row,col;
-    vector<vector<int>> mat;
-    MatrixScalerOperations();
-    MatrixScalerOperations(int r, int c);
-    void enter();
-    void print();
-    void AddScaler(int x);
-    void subtractScaler(int x);
-    void multiplyScaler(int x);
-    void divisionScaler(int x);
-
+    vector<vector<int>> AddScaler(vector<vector<int>> mat,int x);
+    vector<vector<int>> subtractScaler(vector<vector<int>> mat,int x);
+    vector<vector<int>> multiplyScaler(vector<vector<int>> mat,int x);
+    vector<vector<int>> divisionScaler(vector<vector<int>> mat,int x);
 };
 #endif

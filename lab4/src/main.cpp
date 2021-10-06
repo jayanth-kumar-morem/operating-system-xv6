@@ -7,6 +7,7 @@
 #include "log.h"
 #include "MatrixScalerOperations.h"
 #include "MatrixOperations.h"
+#include "Matrix.h"
 using namespace std;
 
  
@@ -25,7 +26,7 @@ void test(){
 
 int main(int argc, char **argv){
     deque<int> scalar;
-    deque<MatrixScalerOperations> deq;
+    deque<Matrix> deq;
     deque<char> orderOfEntry;
     // test();
     bool isScalerPresent=false;
@@ -66,8 +67,8 @@ int main(int argc, char **argv){
         c=atoi(substr.c_str());
         L_(linfo) << "row == "<<r<<" col == "<<c;
         L_(linfo) << "Matrix Scanned ";
-        
-        MatrixScalerOperations mat(r,c);
+
+        Matrix mat(r,c);
         mat.enter();
         // mat.print();
         deq.push_back(mat);
@@ -117,13 +118,13 @@ int main(int argc, char **argv){
                         exit(3);
                     }
                     MatrixOperations op;
-                    MatrixScalerOperations mat1=deq.front();
+                    Matrix mat1=deq.front();
                     deq.pop_front();
-                    MatrixScalerOperations mat2=deq.front();
+                    Matrix mat2=deq.front();
                     deq.pop_front();
 
                     vector<vector<int>> res=op.addMatrices(mat1.mat,mat2.mat);
-                    MatrixScalerOperations resMatrix(res.size(),res[0].size());
+                    Matrix resMatrix(res.size(),res[0].size());
                     resMatrix.mat=res;
                     
                     deq.push_front(resMatrix);
@@ -137,17 +138,21 @@ int main(int argc, char **argv){
                         L_(linfo) << "Exiting Program due to lack of scalar values";
                         exit(3);
                     }
-                    MatrixOperations op;
-                    MatrixScalerOperations mat1=deq.front();
+                    Matrix mat1=deq.front();
 
                     int sclr=scalar.front();
                     scalar.pop_front();
-
                     deq.pop_front();
-                    mat1.AddScaler(sclr);
-                    
-                    deq.push_front(mat1);
+
+                    MatrixScalerOperations op;
+                    Matrix res;
+                    res.mat=op.AddScaler(mat1.mat,sclr);
+                    res.col=res.mat[0].size();
+                    res.row=res.mat.size();
+
+                    deq.push_front(res);
                     orderOfEntry.push_front('m');
+
                 }else if(entry1=='s' && entry2=='s'){
                     if(scalar.size()<=1){
                         L_(linfo) << "Exiting Program due to lack of scalar values";
@@ -181,13 +186,13 @@ int main(int argc, char **argv){
                         exit(3);
                     }
                     MatrixOperations op;
-                    MatrixScalerOperations mat1=deq.front();
+                    Matrix mat1=deq.front();
                     deq.pop_front();
-                    MatrixScalerOperations mat2=deq.front();
+                    Matrix mat2=deq.front();
                     deq.pop_front();
 
                     vector<vector<int>> res=op.subtractMatrices(mat1.mat,mat2.mat);
-                    MatrixScalerOperations resMatrix(res.size(),res[0].size());
+                    Matrix resMatrix(res.size(),res[0].size());
                     resMatrix.mat=res;
                     
                     deq.push_front(resMatrix);
@@ -201,17 +206,20 @@ int main(int argc, char **argv){
                         L_(linfo) << "Exiting Program due to lack of scalar values";
                         exit(3);
                     }
-                    MatrixOperations op;
-                    MatrixScalerOperations mat1=deq.front();
+                    Matrix mat1=deq.front();
 
                     int sclr=scalar.front();
                     scalar.pop_front();
 
                     deq.pop_front();
-                    mat1.subtractScaler(sclr);
                     
-                    deq.push_front(mat1);
+                    MatrixScalerOperations op;
+                    Matrix res;
+                    res.mat=op.subtractScaler(mat1.mat,sclr);
+                    
+                    deq.push_front(res);
                     orderOfEntry.push_front('m');
+
                 }else if(entry1=='s' && entry2=='s'){
                     if(scalar.size()<=1){
                         L_(linfo) << "Exiting Program due to lack of scalar values";
@@ -245,13 +253,13 @@ int main(int argc, char **argv){
                         exit(3);
                     }
                     MatrixOperations op;
-                    MatrixScalerOperations mat1=deq.front();
+                    Matrix mat1=deq.front();
                     deq.pop_front();
-                    MatrixScalerOperations mat2=deq.front();
+                    Matrix mat2=deq.front();
                     deq.pop_front();
 
                     vector<vector<int>> res=op.multiplyMatrices(mat1.mat,mat2.mat);
-                    MatrixScalerOperations resMatrix(res.size(),res[0].size());
+                    Matrix resMatrix(res.size(),res[0].size());
                     resMatrix.mat=res;
                     
                     deq.push_front(resMatrix);
@@ -266,16 +274,19 @@ int main(int argc, char **argv){
                         L_(linfo) << "Exiting Program due to lack of scalar values";
                         exit(3);
                     }
-                    MatrixOperations op;
-                    MatrixScalerOperations mat1=deq.front();
+                    Matrix mat1=deq.front();
 
                     int sclr=scalar.front();
                     scalar.pop_front();
 
                     deq.pop_front();
-                    mat1.multiplyScaler(sclr);
-                    
-                    deq.push_front(mat1);
+                    Matrix res;
+                    MatrixScalerOperations op;
+                    res.mat=op.multiplyScaler(mat1.mat,sclr);
+                    res.col=res.mat[0].size();
+                    res.row=res.mat.size();
+
+                    deq.push_front(res);
                     orderOfEntry.push_front('m');
                 }else if(entry1=='s' && entry2=='s'){
                     if(scalar.size()<=1){
@@ -313,17 +324,20 @@ int main(int argc, char **argv){
                 orderOfEntry.pop_front();
 
                 if(entry1=='m' && entry2=='s' || entry2=='m' && entry1=='s' ){
-                    MatrixScalerOperations mat=deq.front();
+                    Matrix mat=deq.front();
                     deq.pop_front();
 
                     int sclr=scalar.front();
                     scalar.pop_front();
-                    
-                    mat.divisionScaler(sclr);
-                    deq.push_front(mat);
+                    Matrix res;
+                    MatrixScalerOperations op;
 
+                    res.mat=op.divisionScaler(mat.mat,sclr);
+                    res.col=res.mat[0].size();
+                    res.row=res.mat.size();
+                    
+                    deq.push_front(res);
                     orderOfEntry.push_front('m');
-            
                 }
             }
         }
@@ -341,11 +355,11 @@ int main(int argc, char **argv){
                 exit(3);
             }
             else{
-                MatrixScalerOperations mat=deq.front();
+                Matrix mat=deq.front();
                 deq.pop_front();
                 MatrixOperations op;
                 vector<vector<int>> res=op.transposeMatrix(mat.mat);
-                MatrixScalerOperations ans(res.size(),res[0].size());
+                Matrix ans(res.size(),res[0].size());
                 ans.mat=res;
                 deq.push_front(ans);
             }
@@ -360,7 +374,7 @@ int main(int argc, char **argv){
                 exit(3);
             }
             else{
-                MatrixScalerOperations mat=deq.front();
+                Matrix mat=deq.front();
                 deq.pop_front();
                 MatrixOperations op;
                 int x = op.determinantOfMatrix(mat.mat,mat.mat.size());
@@ -374,7 +388,7 @@ int main(int argc, char **argv){
     endLogger();
     if(orderOfEntry.size()){
         if(orderOfEntry.front()=='m'){
-            MatrixScalerOperations mat=deq.front();
+            Matrix mat=deq.front();
             cout<<mat.row<<" "<<mat.col<<endl;
             mat.print();
             deq.pop_front();
