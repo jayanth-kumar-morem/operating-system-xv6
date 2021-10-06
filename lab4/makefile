@@ -2,31 +2,31 @@ LIBSDIR:= libs
 EXEDIR:=bin
 word-dot = $(word $2,$(subst  , ,$1))
 EXE:=$(EXEDIR)/main
-PWD=
-ARGS:=$(filter-out $@,$(MAKECMDGOALS))
-all: 
+
+TESTCASESDIR:= tests
+TESTCASES_INPUT_FILES:= $(wildcard $(TESTCASESDIR)/*.in)
+TESTCASES_FILE_NAMES:=$(patsubst tests/%.in,%,$(TESTCASES_INPUT_FILES))
+
+all:
 	g++ -o bin/main -I ./include src/*.cpp
 	@echo "Finished Successfully"
+
 bin/main:
 	@echo ""
 prepare:
-#	bin/main $(filter-out $@,$(MAKECMDGOALS))[0]
-#	${EXE} < $(word 2,$(ARGS)) < iutput
-	@echo hi
+	@echo "input file path : " \
+	&& read inp1 \
+	&& echo "output file path : " \
+	&& read inp2 \
+	&& echo `./bin/main < $${inp1} > $${inp2}` > temp.sh;
+run: temp.sh
+	@bash temp.sh
+	@rm -f temp.sh
+temp.sh:
+	./bin/main < run.in > run.out
+Tests:${TESTCASES_FILE_NAMES}
 
-$(word 2,$(ARGS)) : 
-	$(Input) = $@
-	$(Ouput) = $(word 3,$(ARGS))
-	@echo helloin
-
-$(word 3,$(ARGS)) : 
-	@echo helloout
-
-run :
-#	${EXE} -m < $(Input) > $(output)
-	${EXE} -m < $(Input) > $(Output)
-	@echo run
-
-test:
-	@echo ${a}
-
+test%:
+	@echo `./bin/main < tests/$@.in > tests/junk.out` > temp.sh;
+	@bash temp.sh
+	@bash test.sh tests/$@.out

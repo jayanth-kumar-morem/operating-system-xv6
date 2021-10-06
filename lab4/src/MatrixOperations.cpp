@@ -137,7 +137,7 @@ using namespace std;
         if (n == 1)
             return mat[0][0];
         if(!n)  return 0;
-        if(n!=mat[0].size()){
+        if(mat.size()!=mat[0].size()){
             initLogger( "mylogfile.log", ldebug);
             L_(lwarning) << "Invalid Size... Exiting...";
             endLogger();

@@ -32,11 +32,34 @@ int main(int argc, char **argv){
     bool isScalerPresent=false;
     int contEmptyLines=0;
     
-    initLogger( "mylogfile.log", ldebug);
-    
-	while(1){
-		string temp;
-		getline(cin,temp);
+    initLogger( "./Build/mylogfile.log", ldebug);
+    string temp;
+    bool firstLine=false;
+    deque<char> operations;
+
+	while(getline(cin,temp)){
+        contEmptyLines=0;
+		if(!firstLine){
+            firstLine=true;
+            string word = "";
+            string temp1=temp.substr(1,temp.length());
+            for (auto x : temp1) 
+            {
+                if (x == ' ')
+                {
+                    if(word[0]=='a' ||word[0]=='s' ||word[0]=='m' ||word[0]=='d' ||word[0]=='t' ||word[0]=='x'){
+                        operations.push_back((char)(word[0]));
+                    }
+                    word = "";
+                }
+                else {
+                    word = word + x;
+                }
+            }
+            if(word[0]=='a' ||word[0]=='s' ||word[0]=='m' ||word[0]=='d' ||word[0]=='t' ||word[0]=='x'){
+                operations.push_back((char)(word[0]));
+            }
+        }
         if(contEmptyLines>=2)   break;
 		if(!temp.length()){
             L_(linfo) << "Empty Line Detected";
@@ -75,22 +98,21 @@ int main(int argc, char **argv){
         orderOfEntry.push_back('m');
     }
 
-    int c;
-    opterr = 0; 
-    deque<char> operations;
-    while ((c = getopt (argc, argv, "asmdtx:")) != -1)
-        switch (c)
-        {
-            case '?':
-                if (optopt == 'c')
-                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-                else if (isprint (optopt))
-                    fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-                else
-                    fprintf (stderr,"Unknown option character `\\x%x'.\n",optopt);
-            default:
-                operations.push_back((char)(c));
-        }
+//    int c;
+//    opterr = 0; 
+//    while ((c = getopt (argc, argv, "asmdtx:")) != -1)
+//        switch (c)
+//        {
+//            case '?':
+//                if (optopt == 'c')
+//                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+//                else if (isprint (optopt))
+//                    fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+//                else
+//                    fprintf (stderr,"Unknown option character `\\x%x'.\n",optopt);
+//            default:
+//                operations.push_back((char)(c));
+//        }
     if(!operations.size()){
         L_(linfo) << "Exiting Program due to lack of Operations provided";
         exit(3);
@@ -100,7 +122,6 @@ int main(int argc, char **argv){
         char operation=operations.front();
         operations.pop_front();
         L_(linfo) << "Current Operation == "<< operation;
-
         if(operation=='a'){
             if(orderOfEntry.size()<=1){
                 L_(linfo) << "Exiting Program due to lack of objects";
@@ -323,12 +344,14 @@ int main(int argc, char **argv){
                 char entry2=orderOfEntry.front();
                 orderOfEntry.pop_front();
 
+
                 if(entry1=='m' && entry2=='s' || entry2=='m' && entry1=='s' ){
                     Matrix mat=deq.front();
                     deq.pop_front();
 
                     int sclr=scalar.front();
                     scalar.pop_front();
+                    
                     Matrix res;
                     MatrixScalerOperations op;
 
