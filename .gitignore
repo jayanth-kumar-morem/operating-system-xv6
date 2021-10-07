@@ -3,7 +3,7 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
-.vscode
+.vscode/
 bin/
 libs/
 Build/
@@ -14,7 +14,6 @@ dist/
 
 # Compiled Java class files
 *.class
-*/.vscode
 # Compiled Python bytecode
 *.py[cod]
 
