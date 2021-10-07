@@ -32,7 +32,7 @@ int main(int argc, char **argv){
     bool isScalerPresent=false;
     int contEmptyLines=0;
     
-    initLogger( "./Build/mylogfile.log", ldebug);
+    initLogger( "./Build/RUN.log", ldebug);
     string temp;
     bool firstLine=false;
     deque<char> operations;
