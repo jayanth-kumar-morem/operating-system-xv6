@@ -5,9 +5,9 @@ word-dot = $(word $2,$(subst  , ,$1))
 EXE:=$(EXEDIR)/main
 LIBS:=$(addprefix $(LIBSDIR)/,libmatrixscaleroperations.a libmatrixoperations.so)
 
-TESTCASESDIR:= tests
+TESTCASESDIR:= Tests
 TESTCASES_INPUT_FILES:= $(wildcard $(TESTCASESDIR)/*.in)
-TESTCASES_FILE_NAMES:=$(patsubst tests/%.in,%,$(TESTCASES_INPUT_FILES))
+TESTCASES_FILE_NAMES:=$(patsubst Tests/%.in,%,$(TESTCASES_INPUT_FILES))
 
 all: $(EXE)
 	@echo "Finished Successfully"
@@ -45,22 +45,37 @@ $(BUILDDIR):
 
 clean:
 	rm -rf bin lib Build
-prepare:
+prepare:$(EXE) 
 	@echo "input file path : " \
 	&& read inp1 \
 	&& echo "output file path : " \
 	&& read inp2 \
 	&& echo `./bin/main < $${inp1} > $${inp2}` > temp.sh;
-run: temp.sh
+run:$(EXE) temp.sh
 	@bash temp.sh
 	@rm -f temp.sh
 temp.sh:
 	./bin/main < run.in > run.out
 
-Tests:$(EXE) ${TESTCASES_FILE_NAMES}
+tests:$(EXE) ${TESTCASES_FILE_NAMES}
+	@echo
+test%:$(EXE)
+	@echo
+	@echo Running $@
+	@echo `./bin/main < Tests/$@.in > Tests/junk.out` > temp.sh;
 
-test%:
-	@echo `./bin/main < tests/$@.in > tests/junk.out` > temp.sh;
 	@bash temp.sh
-	@bash test.sh tests/$@.out
+
+	@echo
+	@echo "Program's Output"
+	@cat Tests/junk.out
+	@echo "---------------"
+
+	@echo
+	@echo "Expected Output"
+	@cat Tests/$@.out
+	@echo "---------------"
+
+	@echo
+	@bash test.sh Tests/$@.out
 	@rm -f temp.sh
