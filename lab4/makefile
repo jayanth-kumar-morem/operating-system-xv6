@@ -44,19 +44,20 @@ $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
 
 clean:
-	rm -rf bin lib Build
+	touch Tests/junk.out
+	rm -rf bin lib Build Tests/junk.out
 prepare:$(EXE) 
 	@echo "input file path : " \
 	&& read inp1 \
 	&& echo "output file path : " \
 	&& read inp2 \
-	&& echo `./bin/main < $${inp1} > $${inp2}` > temp.sh;
+	&& echo "./bin/main < $${inp1} > $${inp2}" >> temp.sh;
 run:$(EXE) temp.sh
 	@bash temp.sh
 	@rm -f temp.sh
 temp.sh:
-	./bin/main < run.in > run.out
-
+	@echo `./bin/main < run.in > run.out` > temp.sh
+libs:$(LIBS)
 tests:$(EXE) ${TESTCASES_FILE_NAMES}
 	@echo
 test%:$(EXE)
