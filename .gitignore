@@ -1,7 +1,7 @@
-.vscode/
-bin/
-libs/
-Build/
+# These are some examples of commonly ignored file patterns.
+# You should customize this list as applicable to your project.
+# Learn more about .gitignore:
+#     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
 # Node artifact files
 node_modules/
@@ -9,6 +9,7 @@ dist/
 
 # Compiled Java class files
 *.class
+
 # Compiled Python bytecode
 *.py[cod]
 
@@ -46,3 +47,25 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+
+# Auto-save and backup files
+*~
+tags
+
+# xv6 gitignores
+*~
+_*
+*.o
+*.d
+*.asm
+*.sym
+*.img
+vectors.S
+bootblock
+entryother
+initcode
+initcode.out
+kernel
+kernelmemfs
+mkfs
+.gdbinit
