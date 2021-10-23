@@ -1,0 +1,185 @@
+#include <iostream>
+#include <bits/stdc++.h>
+#include <pthread.h>
+#include <time.h>
+#include <unistd.h>
+
+// Constants
+#define FINISH_DISTANCE (ll)10000000
+#define HARE_STEPS_AT_ONCE 5
+#define MIN_DIST_TO_SLEEP 1e8
+
+using namespace std;
+using ll = long long int;
+
+ll hare_dist = 0;
+ll tortoise_dist = 0;
+
+ll hare_time = 0;
+ll tortoise_time = 0;
+
+bool race_end=false;
+
+// 0 == God chooses random positions
+// 1 == God asks user for new positions
+int interface_type=0; 
+
+pthread_mutex_t tortoise_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t hare_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t terminal_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+ll getRandomDistance() {
+    return rand()%(FINISH_DISTANCE+1);
+}
+bool getRandomCondition(){
+    return ( (double) rand() / (RAND_MAX) ) >= 0.8;
+}
+void *tortoise_run(void *args) {
+    while(tortoise_dist < FINISH_DISTANCE) {
+        if(race_end){
+            break;
+        }
+        pthread_mutex_lock (&tortoise_mutex);
+        tortoise_dist++;
+        tortoise_time++;
+        pthread_mutex_unlock (&tortoise_mutex);
+    }
+    race_end=true;
+    return (void *) 0;
+}
+void *hare_run(void *args) {
+    while(hare_dist < FINISH_DISTANCE) {
+        if(race_end){
+            break;
+        }
+        if(hare_dist-tortoise_dist >= MIN_DIST_TO_SLEEP) {
+            long sleep_time = rand()%(100000);
+            hare_time += sleep_time;
+
+            long random_sleep = rand()%1000; // 0 - 999
+            usleep(random_sleep);
+        }
+        pthread_mutex_lock (&hare_mutex);
+        hare_dist += HARE_STEPS_AT_ONCE;
+        hare_time++;
+        pthread_mutex_unlock (&hare_mutex);
+    }
+    race_end=true;
+    return (void *) 0;
+}
+void *reporter_run(void *args) {
+    while(tortoise_dist < FINISH_DISTANCE || hare_dist < FINISH_DISTANCE) {
+        if(race_end){
+            break;
+        }
+        pthread_mutex_lock (&terminal_mutex);
+        cout << "\n<><><><><><><><><> RACE DETAILS <><><><><><><><><>\n";
+        cout << "\n Tortoise is at a distance of : " << tortoise_dist << "\t, at time : " << tortoise_time << " iterations";
+        cout << "\n   Hare   is at a distance of : " << hare_dist << "\t, at time : " << hare_time << " iterations\n";
+
+        pthread_mutex_unlock (&terminal_mutex);
+        usleep(500);
+    }
+    if(tortoise_dist >= FINISH_DISTANCE || hare_dist >= FINISH_DISTANCE){
+        cout<< "\n<><><><><><><><><> RACE IS OVER <><><><><><><><><>\n";
+        cout<< "\n Race is Completed \n\n";
+        cout<< "\tTortoise's Time : " << tortoise_time << " iterations\n";
+        cout<< "\tHare's Time     : " << hare_time << " iterations\n";
+
+        if (tortoise_time < hare_time) {
+            cout << "\n\tRace's Winner is 'tortoise'\n";
+        } else if (tortoise_time > hare_time) {
+            cout << "\n\tRace's Winner is 'hare'.\n";
+        } else {
+            cout << "\n\tThe race is drawn\n";
+        }
+        cout<< "\n<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        exit(3);
+    }
+
+    return (void *) 0;
+}
+void *god_run(void *args) {
+    while(tortoise_dist < FINISH_DISTANCE || hare_dist < FINISH_DISTANCE) {
+        if(race_end){
+            break;
+        }
+        // halt reporter, tortoise and hare using mutex
+        pthread_mutex_lock (&terminal_mutex);
+        pthread_mutex_lock (&tortoise_mutex);
+        pthread_mutex_lock (&hare_mutex);
+
+        if(getRandomCondition()){
+            cout<<"\n God has changed positions...\n";
+            cout<<"\n<><><><><><><> NEW POSITIONS <><><><><><><><><>\n\n";
+            if(!interface_type){
+                if(tortoise_dist < FINISH_DISTANCE) {
+                    tortoise_dist = getRandomDistance();
+                    cout<<" Tortoise = "<< tortoise_dist << "\n";
+                }
+                if(hare_dist < FINISH_DISTANCE) {
+                    hare_dist = getRandomDistance();
+                    cout<<" Hare     = "<< hare_dist << "\n";
+                }
+            }else{
+                if(tortoise_dist < FINISH_DISTANCE) {
+                    cout<<"Enter Tortoise Distance : ";
+                    cin>> tortoise_dist;
+                    cout<<" Tortoise = "<< tortoise_dist << "\n";
+                }
+                if(hare_dist < FINISH_DISTANCE) {
+                    cout<<"Enter Hare Distance : ";
+                    cin>>hare_dist;
+                    cout<<" Hare     = "<< hare_dist << "\n";
+                }
+            }
+            
+
+        } else {
+
+            pthread_mutex_unlock(&terminal_mutex);
+            pthread_mutex_unlock(&tortoise_mutex);
+            pthread_mutex_unlock(&hare_mutex);
+
+            usleep(500);
+            continue;
+
+        }
+
+        pthread_mutex_unlock(&terminal_mutex);
+        pthread_mutex_unlock(&tortoise_mutex);
+        pthread_mutex_unlock(&hare_mutex);
+    
+    }
+
+    return (void *) 0;
+}
+
+int main() {
+
+    srand(time(NULL));
+
+    cout<<"Choose the Interface Type \n";
+    cout<<"Type 0 for God to choose random values for new positions on interferance \n";
+    cout<<"Type 1 for God to ask user for new positions \n";
+    cin>>interface_type;
+    if(interface_type!=0 && interface_type!=1){
+        cout<<"\nExiting Problem for invalid values";
+        return 1;
+    }
+    cout<<"\nThe Race Target Distance is :"<<FINISH_DISTANCE;
+
+    pthread_t reporter_thread_id, god_thread_id, tortoise_thread_id, hare_thread_id;
+
+    pthread_create (&tortoise_thread_id, NULL, tortoise_run, NULL);
+    pthread_create (&hare_thread_id, NULL, hare_run, NULL);
+    pthread_create (&reporter_thread_id, NULL, reporter_run, NULL);
+    pthread_create (&god_thread_id, NULL, god_run, NULL);
+
+    pthread_join (tortoise_thread_id, NULL);
+    pthread_join (hare_thread_id, NULL);
+    pthread_join (reporter_thread_id, NULL);
+    pthread_join (god_thread_id, NULL);
+
+    return 0;
+}
