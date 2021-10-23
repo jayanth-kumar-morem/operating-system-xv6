@@ -13,10 +13,10 @@ using namespace std;
 using ll = long long int;
 
 ll hare_dist = 0;
-ll tortoise_dist = 0;
+ll turtle_dist = 0;
 
 ll hare_time = 0;
-ll tortoise_time = 0;
+ll turtle_time = 0;
 
 bool race_end=false;
 
@@ -24,7 +24,7 @@ bool race_end=false;
 // 1 == God asks user for new positions
 int interface_type=0; 
 
-pthread_mutex_t tortoise_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t turtle_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t hare_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t terminal_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -34,15 +34,15 @@ ll getRandomDistance() {
 bool getRandomCondition(){
     return ( (double) rand() / (RAND_MAX) ) >= 0.8;
 }
-void *tortoise_run(void *args) {
-    while(tortoise_dist < FINISH_DISTANCE) {
+void *turtle_run(void *args) {
+    while(turtle_dist < FINISH_DISTANCE) {
         if(race_end){
             break;
         }
-        pthread_mutex_lock (&tortoise_mutex);
-        tortoise_dist++;
-        tortoise_time++;
-        pthread_mutex_unlock (&tortoise_mutex);
+        pthread_mutex_lock (&turtle_mutex);
+        turtle_dist++;
+        turtle_time++;
+        pthread_mutex_unlock (&turtle_mutex);
     }
     race_end=true;
     return (void *) 0;
@@ -52,7 +52,7 @@ void *hare_run(void *args) {
         if(race_end){
             break;
         }
-        if(hare_dist-tortoise_dist >= MIN_DIST_TO_SLEEP) {
+        if(hare_dist-turtle_dist >= MIN_DIST_TO_SLEEP) {
             long sleep_time = rand()%(100000);
             hare_time += sleep_time;
 
@@ -68,27 +68,27 @@ void *hare_run(void *args) {
     return (void *) 0;
 }
 void *reporter_run(void *args) {
-    while(tortoise_dist < FINISH_DISTANCE || hare_dist < FINISH_DISTANCE) {
+    while(turtle_dist < FINISH_DISTANCE || hare_dist < FINISH_DISTANCE) {
         if(race_end){
             break;
         }
         pthread_mutex_lock (&terminal_mutex);
         cout << "\n<><><><><><><><><> RACE DETAILS <><><><><><><><><>\n";
-        cout << "\n Tortoise is at a distance of : " << tortoise_dist << "\t, at time : " << tortoise_time << " iterations";
+        cout << "\n turtle is at a distance of : " << turtle_dist << "\t, at time : " << turtle_time << " iterations";
         cout << "\n   Hare   is at a distance of : " << hare_dist << "\t, at time : " << hare_time << " iterations\n";
 
         pthread_mutex_unlock (&terminal_mutex);
         usleep(500);
     }
-    if(tortoise_dist >= FINISH_DISTANCE || hare_dist >= FINISH_DISTANCE){
+    if(turtle_dist >= FINISH_DISTANCE || hare_dist >= FINISH_DISTANCE){
         cout<< "\n<><><><><><><><><> RACE IS OVER <><><><><><><><><>\n";
         cout<< "\n Race is Completed \n\n";
-        cout<< "\tTortoise's Time : " << tortoise_time << " iterations\n";
+        cout<< "\tturtle's Time : " << turtle_time << " iterations\n";
         cout<< "\tHare's Time     : " << hare_time << " iterations\n";
 
-        if (tortoise_time < hare_time) {
-            cout << "\n\tRace's Winner is 'tortoise'\n";
-        } else if (tortoise_time > hare_time) {
+        if (turtle_time < hare_time) {
+            cout << "\n\tRace's Winner is 'turtle'\n";
+        } else if (turtle_time > hare_time) {
             cout << "\n\tRace's Winner is 'hare'.\n";
         } else {
             cout << "\n\tThe race is drawn\n";
@@ -100,32 +100,32 @@ void *reporter_run(void *args) {
     return (void *) 0;
 }
 void *god_run(void *args) {
-    while(tortoise_dist < FINISH_DISTANCE || hare_dist < FINISH_DISTANCE) {
+    while(turtle_dist < FINISH_DISTANCE || hare_dist < FINISH_DISTANCE) {
         if(race_end){
             break;
         }
-        // halt reporter, tortoise and hare using mutex
+        // halt reporter, turtle and hare using mutex
         pthread_mutex_lock (&terminal_mutex);
-        pthread_mutex_lock (&tortoise_mutex);
+        pthread_mutex_lock (&turtle_mutex);
         pthread_mutex_lock (&hare_mutex);
 
         if(getRandomCondition()){
             cout<<"\n God has changed positions...\n";
             cout<<"\n<><><><><><><> NEW POSITIONS <><><><><><><><><>\n\n";
             if(!interface_type){
-                if(tortoise_dist < FINISH_DISTANCE) {
-                    tortoise_dist = getRandomDistance();
-                    cout<<" Tortoise = "<< tortoise_dist << "\n";
+                if(turtle_dist < FINISH_DISTANCE) {
+                    turtle_dist = getRandomDistance();
+                    cout<<" turtle = "<< turtle_dist << "\n";
                 }
                 if(hare_dist < FINISH_DISTANCE) {
                     hare_dist = getRandomDistance();
                     cout<<" Hare     = "<< hare_dist << "\n";
                 }
             }else{
-                if(tortoise_dist < FINISH_DISTANCE) {
-                    cout<<"Enter Tortoise Distance : ";
-                    cin>> tortoise_dist;
-                    cout<<" Tortoise = "<< tortoise_dist << "\n";
+                if(turtle_dist < FINISH_DISTANCE) {
+                    cout<<"Enter turtle Distance : ";
+                    cin>> turtle_dist;
+                    cout<<" turtle = "<< turtle_dist << "\n";
                 }
                 if(hare_dist < FINISH_DISTANCE) {
                     cout<<"Enter Hare Distance : ";
@@ -138,7 +138,7 @@ void *god_run(void *args) {
         } else {
 
             pthread_mutex_unlock(&terminal_mutex);
-            pthread_mutex_unlock(&tortoise_mutex);
+            pthread_mutex_unlock(&turtle_mutex);
             pthread_mutex_unlock(&hare_mutex);
 
             usleep(500);
@@ -147,7 +147,7 @@ void *god_run(void *args) {
         }
 
         pthread_mutex_unlock(&terminal_mutex);
-        pthread_mutex_unlock(&tortoise_mutex);
+        pthread_mutex_unlock(&turtle_mutex);
         pthread_mutex_unlock(&hare_mutex);
     
     }
@@ -169,14 +169,14 @@ int main() {
     }
     cout<<"\nThe Race Target Distance is :"<<FINISH_DISTANCE;
 
-    pthread_t reporter_thread_id, god_thread_id, tortoise_thread_id, hare_thread_id;
+    pthread_t reporter_thread_id, god_thread_id, turtle_thread_id, hare_thread_id;
 
-    pthread_create (&tortoise_thread_id, NULL, tortoise_run, NULL);
+    pthread_create (&turtle_thread_id, NULL, turtle_run, NULL);
     pthread_create (&hare_thread_id, NULL, hare_run, NULL);
     pthread_create (&reporter_thread_id, NULL, reporter_run, NULL);
     pthread_create (&god_thread_id, NULL, god_run, NULL);
 
-    pthread_join (tortoise_thread_id, NULL);
+    pthread_join (turtle_thread_id, NULL);
     pthread_join (hare_thread_id, NULL);
     pthread_join (reporter_thread_id, NULL);
     pthread_join (god_thread_id, NULL);
