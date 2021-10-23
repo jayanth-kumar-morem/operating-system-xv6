@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 // Constants
-#define FINISH_DISTANCE (ll)1000
+#define FINISH_DISTANCE (ll)10000000
 #define HARE_STEPS_AT_ONCE 5
 #define MIN_DIST_TO_SLEEP 1e8
 
@@ -18,7 +18,6 @@ ll turtle_dist = 0;
 ll hare_time = 0;
 ll turtle_time = 0;
 
-bool race_end=false;
 
 // 0 == God chooses random positions
 // 1 == God asks user for new positions
@@ -48,10 +47,10 @@ void *turtle_run(void *args) {
 void *hare_run(void *args) {
     while(hare_dist < FINISH_DISTANCE) {
         if(hare_dist-turtle_dist >= MIN_DIST_TO_SLEEP) {
-            long sleep_time = rand()%(100000);
+            ll sleep_time = rand()%(1000000);
             hare_time += sleep_time;
 
-            long random_sleep = rand()%1000; // 0 - 999
+            ll random_sleep = rand()%1000; // 0 - 999
             usleep(random_sleep);
         }
         pthread_mutex_lock (&hare_mutex);
@@ -74,7 +73,7 @@ void *reporter_run(void *args) {
     if(turtle_dist >= FINISH_DISTANCE || hare_dist >= FINISH_DISTANCE){
         cout<< "\n<><><><><><><><><> RACE IS OVER <><><><><><><><><>\n";
         cout<< "\n Race is Completed \n\n";
-        cout<< "\tturtle's Time : " << turtle_time << " iterations\n";
+        cout<< "\tturtle's Time   : " << turtle_time << " iterations\n";
         cout<< "\tHare's Time     : "<< hare_time << " iterations\n";
 
         if (turtle_time < hare_time) {
@@ -92,7 +91,14 @@ void *reporter_run(void *args) {
 }
 void *god_run(void *args) {
 
-
+//    pthread_create (&reporter_thread_id, NULL, reporter_run, NULL);
+//    pthread_create (&turtle_thread_id, NULL, turtle_run, NULL);
+//    pthread_create (&hare_thread_id, NULL, hare_run, NULL);
+//
+//
+//    pthread_join (turtle_thread_id, NULL);
+//    pthread_join (hare_thread_id, NULL);
+//    pthread_join (reporter_thread_id, NULL);
 
     while(turtle_dist < FINISH_DISTANCE || hare_dist < FINISH_DISTANCE) {
         // halt reporter, turtle and hare using mutex
