@@ -47,7 +47,7 @@ void *turtle_run(void *args) {
 void *hare_run(void *args) {
     while(hare_dist < FINISH_DISTANCE) {
         if(hare_dist-turtle_dist >= MIN_DIST_TO_SLEEP) {
-            ll sleep_time = rand()%(1000000);
+            ll sleep_time = rand()%(10000000);
             hare_time += sleep_time;
 
             ll random_sleep = rand()%1000; // 0 - 999
@@ -159,7 +159,7 @@ int main() {
     cout<<"Choose the Interface Type \n";
     cout<<"Type 0 for God to choose random values for new positions on interferance \n";
     cout<<"Type 1 for God to ask user for new positions \n";
-    cin>>interface_type;
+    //cin>>interface_type;
     if(interface_type!=0 && interface_type!=1){
         cout<<"\nExiting Problem for invalid values";
         return 1;
