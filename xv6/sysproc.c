@@ -89,14 +89,12 @@ sys_uptime(void)
   return xticks;
 }
 
-int
-sys_getcount(void)
+int sys_getcount(void)
 {
   int n;
-  if(argint(0, &n) < 0){
-    return -1;
-  }
-  else{
+  if(argint(0, &n) >= 0){
     return (myproc()->systemCallCounts[n]);
+  }else{
+    return -1;
   }
 }
