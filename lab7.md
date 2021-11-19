@@ -23,4 +23,3 @@
         run the command make qemu-nox 
         In the command prompt of (booted) xv6, type test_v2paddr
         For grading purposes, the instructor will replace your test_v2paddr.c with different programs.
-

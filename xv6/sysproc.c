@@ -98,3 +98,12 @@ int sys_getcount(void)
     return -1;
   }
 }
+
+int sys_v2paddr(void)
+{
+  unsigned* va;
+  unsigned* pa;
+  argptr(0, (void*)&va, sizeof(va));
+  argptr(1, (void*)&pa, sizeof(pa));
+  return v2paddr(va,pa);
+}

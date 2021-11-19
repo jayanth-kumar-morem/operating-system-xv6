@@ -532,3 +532,29 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+int v2paddr(unsigned* va, unsigned* pa){
+
+    if((*va)>=0x80000000){
+      cprintf("\n The Input Virtual Address is Invalid or greater than Kernal Base (KERNBASE = 0x80000000) \n");
+      return -1;
+    }
+
+    pde_t *pde = &(myproc()->pgdir)[PDX(*va)];
+    if(!(*pde & PTE_P)){
+      cprintf("\n The Input Virtual Address is Invalid or PDE is Invalid\n");
+      return -1;
+    }
+
+    pte_t *pg_table = (pte_t*)P2V(PTE_ADDR(*pde));
+    pte_t *pte = &pg_table[PTX(*va)];
+    if(!(*pte & PTE_P)){
+      cprintf("\n The Input Virtual Address is Invalid or PTE is Invalid \n");
+      return -1;
+    }
+    
+    *pa = (uint)((pte_t)(PTE_ADDR(*pte)+((*va)&0xFFFF)));
+    cprintf("\n PHYSICAL ADDRESS corresponding to %x is == %x \n",*va,*pa);
+
+    return 0;
+}
