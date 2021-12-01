@@ -253,6 +253,8 @@ create(char *path, short type, short major, short minor)
     ilock(ip);
     if(type == T_FILE && ip->type == T_FILE)
       return ip;
+    if(type == T_SYMLINK) 
+      return ip;
     iunlockput(ip);
     return 0;
   }
@@ -281,6 +283,7 @@ create(char *path, short type, short major, short minor)
 
   return ip;
 }
+
 
 int
 sys_open(void)
@@ -313,6 +316,35 @@ sys_open(void)
       return -1;
     }
   }
+
+  if(ip->type == T_SYMLINK && !(omode & O_NOFOLLOW)){
+    	int level = 0;
+    	while(ip->type == T_SYMLINK && level < 10)
+    	{
+    		int cnt = 0;
+    		
+        readi(ip, (void*)&cnt, 0, sizeof(int));
+    		readi(ip, path, sizeof(int), cnt+1);
+
+    		iunlockput(ip);
+    		if( (ip = namei(path)) ==0)
+          {
+            cprintf("Non-existent file\n");
+      		  return -1;
+          }
+    		
+        ilock(ip);
+    		level+=1;
+      }
+    	if(level>9)
+    	{
+    		cprintf("Sym-link chain formed a cycle !");
+    		iunlockput(ip);
+    		return -1;
+    	}	
+ 	
+  }
+  
 
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
     if(f)
@@ -440,5 +472,34 @@ sys_pipe(void)
   }
   fd[0] = fd0;
   fd[1] = fd1;
+  return 0;
+}
+
+
+int
+sys_symlink(void)
+{
+  char *goal, *path;
+  if(argstr(0, (void*)&goal) < 0 || argstr(1, (void*)&path) < 0){
+    return -1;
+  }
+
+  begin_op(); // operation start
+
+  struct inode *ip = create(path, T_SYMLINK, 0, 0);
+  if(ip == 0){
+    end_op(); // end operation
+    return -1;
+  }
+
+  int len = strlen(goal);
+
+  writei(ip, (void*)&len, 0, sizeof(int));
+  writei(ip, (void*)goal, sizeof(int), len + 1);
+  
+  iupdate(ip);
+  iunlockput(ip);
+
+  end_op(); // end operation
   return 0;
 }

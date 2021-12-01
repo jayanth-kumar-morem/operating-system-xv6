@@ -107,3 +107,11 @@ int sys_v2paddr(void)
   argptr(1, (void*)&pa, sizeof(pa));
   return v2paddr(va,pa);
 }
+// int sys_symlink(void)
+// {
+//   char* t1;
+//   char* t2;
+//   argptr(0, (void*)&t1, sizeof(t1));
+//   argptr(1, (void*)&t2, sizeof(t2));
+//   return symlink(t1,t2);
+// }

@@ -183,6 +183,7 @@ UPROGS=\
 	_zombie\
 	_test_v2paddr\
 	_get_syscall_counts\
+	_test_symlink\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -254,6 +255,7 @@ EXTRA=\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
 	printf.c umalloc.c\
 	get_syscall_counts.c\
+	test_symlink.c\
 	test_v2paddr.c \
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
